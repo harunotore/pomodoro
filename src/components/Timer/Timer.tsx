@@ -9,13 +9,13 @@ export default function Timer() {
   const timer = useTimer()
   const dispatch = useDispatch()
   const timeInMilliseconds = convertMinutesToMilliSeconds(timer.timeInMinutes)
-  
+
   const [remainingTime, setRemainingTime] = useState(timeInMilliseconds)
   const [isRunning, setIsRunning] = useState(false)
   const intervalRef = useRef<number>(null!)
   const startTimeRef = useRef<number>(null!)
   const saveTimeRef = useRef(timeInMilliseconds)
-  
+
   const handleStart = () => {
     if (!isRunning) {
       startTimeRef.current = Date.now()
@@ -39,14 +39,6 @@ export default function Timer() {
     setIsRunning(false);
   }
 
-  const handleReset = () => {
-    clearInterval(intervalRef.current);
-    console.log(timeInMilliseconds)
-    setRemainingTime(timeInMilliseconds)
-    saveTimeRef.current = timeInMilliseconds;
-    setIsRunning(false);
-  }
-
   const formatTime = (ms: number) => {
     const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((ms % (1000 * 60)) / 1000);
@@ -60,6 +52,14 @@ export default function Timer() {
     setRemainingTime(updateTime)
     saveTimeRef.current = updateTime;
     setIsRunning(false);
+  }
+
+  const handleClick = () => {
+    if (isRunning) {
+      handlePause()
+    } else {
+      handleStart()
+    }
   }
 
   return (
@@ -77,9 +77,7 @@ export default function Timer() {
       </div>
 
       <div>
-        <Button className='bg-red-500' onClick={handleStart}>start</Button>
-        <Button onClick={handlePause}>stop</Button>
-        <Button onClick={handleReset}>reset</Button>
+        <Button className='bg-red-500' onClick={handleClick}>{isRunning ? 'stop' : 'start'}</Button>
       </div>
     </div>
   )
