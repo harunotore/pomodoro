@@ -1,19 +1,18 @@
 import { useRef, useState } from "react"
-import Button from "../Button/Button";
-import { convertMinutesToMilliSeconds } from "../../utils/utils";
-import useTimer from "../../hooks/useTimer";
-import { useDispatch } from "react-redux";
-import { update } from "../../slices/timerSlice";
+import Button from "../Button/Button"
+import { convertMinutesToMilliSeconds } from "../../utils/utils"
+import useTimer from "../../hooks/useTimer"
+import { useDispatch } from "react-redux"
+import { update } from "../../slices/timerSlice"
 
 export default function Timer() {
   const timer = useTimer()
   const dispatch = useDispatch()
   const timeInMilliseconds = convertMinutesToMilliSeconds(timer.timeInMinutes)
   
-  const [remainingTime, setRemainingTime] = useState(timeInMilliseconds);
-  const [isRunning, setIsRunning] = useState(false);
-  const intervalRef = useRef<number>(null!);
-
+  const [remainingTime, setRemainingTime] = useState(timeInMilliseconds)
+  const [isRunning, setIsRunning] = useState(false)
+  const intervalRef = useRef<number>(null!)
   const startTimeRef = useRef<number>(null!)
   const saveTimeRef = useRef(timeInMilliseconds)
   

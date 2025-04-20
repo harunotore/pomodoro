@@ -1,4 +1,7 @@
-import { useEffect, useRef, useState } from "react"
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+//@ts-nocheck
+
+// import { useEffect, useRef, useState } from "react"
 //
 //remaing time in miloseconds
 export default function Timer({ totalTime = 10000 }) {
@@ -32,6 +35,7 @@ export default function Timer({ totalTime = 10000 }) {
         setIsRunning(false);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleReset = () => {
         clearInterval(intervalRef.current);
         setRemainingTime(totalTime)
@@ -39,9 +43,6 @@ export default function Timer({ totalTime = 10000 }) {
     }
 
     const formatTime = (ms) => {
-        const hours = Math.floor(
-            (ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        )
         const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((ms % (1000 * 60)) / 1000);
         const milliseconds = Math.floor((ms % 1000) / 10); // hundredths

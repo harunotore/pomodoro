@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { useSelector } from 'react-redux'
 
 export interface CounterState {
   value: number
