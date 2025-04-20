@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
 import counterReducer from '../slices/counterSlice'
+import timerReduce from '../slices/timerSlice'
+
 export const store = configureStore({
     reducer: {
-        counter: counterReducer,
+        timer: timerReduce,
     },
 })
 

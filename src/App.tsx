@@ -1,18 +1,12 @@
 
 import './App.css'
-import SideBySideTimer from './components/Timer/SideBySideTimer'
-import Timer from './components/Timer/Timer'
-import Timer2 from './components/Timer/Timer2'
+import TimerContainer from './components/TimerContainer/TimerContainer'
 
 function App() {
 
   return (
     <>
-      <Timer />
-      
-      <Timer2/>
-      
-      <SideBySideTimer/>
+      <TimerContainer />
     </>
   )
 }

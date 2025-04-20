@@ -1,32 +1,26 @@
-import { useEffect, useRef, useState } from "react"
-import clsx from "clsx"
+import { useRef, useState } from "react"
+import Button from "../Button/Button";
+import { convertMinutesToMilliSeconds } from "../../utils/utils";
+import useTimer from "../../hooks/useTimer";
+import { useDispatch } from "react-redux";
+import { update } from "../../slices/timerSlice";
 
-interface ButtonProps {
-  children: React.ReactNode
-  onClick?: () => void
-  className?: string
-}
-const Button = ({ children, onClick, className }: ButtonProps) => {
-  return (
-    <button className={clsx('py-4 px-8 bg-blue-500 ', className)} onClick={onClick}>
-      {children}
-    </button>
-  )
-}
-
-export default function Timer({ totalTime = 10000 }) {
-  const [remainingTime, setRemainingTime] = useState(totalTime);
+export default function Timer() {
+  const timer = useTimer()
+  const dispatch = useDispatch()
+  const timeInMilliseconds = convertMinutesToMilliSeconds(timer.timeInMinutes)
+  
+  const [remainingTime, setRemainingTime] = useState(timeInMilliseconds);
   const [isRunning, setIsRunning] = useState(false);
+  const intervalRef = useRef<number>(null!);
 
-  const intervalRef = useRef(null);
-  const startTimeRef = useRef(null)
-  const saveTimeRef = useRef(totalTime)
-
+  const startTimeRef = useRef<number>(null!)
+  const saveTimeRef = useRef(timeInMilliseconds)
+  
   const handleStart = () => {
-    startTimeRef.current = Date.now()
     if (!isRunning) {
+      startTimeRef.current = Date.now()
       intervalRef.current = setInterval(() => {
-        console.log(saveTimeRef.current)
         const difference = Date.now() - startTimeRef.current
         const newRemainingTime = saveTimeRef.current - difference
         if (newRemainingTime <= 0) {
@@ -48,33 +42,45 @@ export default function Timer({ totalTime = 10000 }) {
 
   const handleReset = () => {
     clearInterval(intervalRef.current);
-    setRemainingTime(totalTime)
-    saveTimeRef.current = totalTime;
+    console.log(timeInMilliseconds)
+    setRemainingTime(timeInMilliseconds)
+    saveTimeRef.current = timeInMilliseconds;
     setIsRunning(false);
-
   }
 
-  const formatTime = (ms) => {
-    const hours = Math.floor(
-      (ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    )
+  const formatTime = (ms: number) => {
     const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((ms % (1000 * 60)) / 1000);
-    const milliseconds = Math.floor((ms % 1000) / 10); // hundredths
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`
+  }
 
-    return `${minutes}:${seconds.toString().padStart(2, "0")}.${milliseconds
-      .toString()
-      .padStart(2, "0")}`;
+  const handleUpdate = (timerLength: number) => {
+    dispatch(update(timerLength))
+    const updateTime = convertMinutesToMilliSeconds(timerLength)
+    clearInterval(intervalRef.current);
+    setRemainingTime(updateTime)
+    saveTimeRef.current = updateTime;
+    setIsRunning(false);
   }
 
   return (
     <div>
+      <div className="flex flex-col gap-8">
+        <div className="flex gap-4">
+          <Button onClick={() => handleUpdate(25)}>Pomodoro</Button>
+          <Button onClick={() => handleUpdate(5)}>Short Break</Button>
+          <Button onClick={() => handleUpdate(10)}>Long Break</Button>
+        </div>
+      </div >
+
       <div className="text-8xl">
         {formatTime(remainingTime)}
       </div>
+
       <div>
         <Button className='bg-red-500' onClick={handleStart}>start</Button>
         <Button onClick={handlePause}>stop</Button>
+        <Button onClick={handleReset}>reset</Button>
       </div>
     </div>
   )
