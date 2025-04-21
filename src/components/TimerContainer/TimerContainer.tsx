@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Button from "../Button/Button";
-import { convertMinutesToMilliSeconds } from "../../utils/utils";
+import { convertMinToMs } from "../../utils/utils";
 import useTimer from "../../hooks/useTimer";
 import { updateMode, updateTimeLeft } from "../../slices/timerSlice";
 import { useDispatch } from "react-redux";
@@ -31,10 +31,10 @@ export default function TimerContainer() {
                         //checkmode and switch but also set time 
                         if (timer.mode === modeTypes.pomodoroMode) {
                             dispatch(updateMode(modeTypes.shortBreakMode))
-                            dispatch(updateTimeLeft(convertMinutesToMilliSeconds(timer.shortBreakTimeInMinutes)))
+                            dispatch(updateTimeLeft(convertMinToMs(timer.shortBreakTimeInMinutes)))
                         } else if (timer.mode === modeTypes.shortBreakMode) {
                             dispatch(updateMode(modeTypes.pomodoroMode))
-                            dispatch(updateTimeLeft(convertMinutesToMilliSeconds(timer.pomodoroTimeInMinutes)))
+                            dispatch(updateTimeLeft(convertMinToMs(timer.pomodoroTimeInMinutes)))
                         }
                         clearInterval(intervalRef.current)
                         setIsActive(false)
@@ -62,17 +62,28 @@ export default function TimerContainer() {
 
     const checkMode = () => {
         if (timer.mode === modeTypes.pomodoroMode) {
-            dispatch(updateTimeLeft(convertMinutesToMilliSeconds(timer.pomodoroTimeInMinutes)))
+            dispatch(updateTimeLeft(convertMinToMs(timer.pomodoroTimeInMinutes)))
         } else if (timer.mode === modeTypes.shortBreakMode) {
-            dispatch(updateTimeLeft(convertMinutesToMilliSeconds(timer.shortBreakTimeInMinutes)))
+            dispatch(updateTimeLeft(convertMinToMs(timer.shortBreakTimeInMinutes)))
         }
     }
-    
+
     const handleChangeMode = (mode: string) => {
         setIsActive(false)
         dispatch(updateMode(mode))
         clearInterval(intervalRef.current)
-        
+        switch (mode) {
+            case modeTypes.pomodoroMode:
+                dispatch(updateTimeLeft(convertMinToMs(timer.pomodoroTimeInMinutes)))
+                break
+            case modeTypes.shortBreakMode:
+                dispatch(updateTimeLeft(convertMinToMs(timer.shortBreakTimeInMinutes)))
+                break
+            case modeTypes.longBreakMode:
+                dispatch(updateTimeLeft(convertMinToMs(timer.longBreakTimeInMinutes)))
+                break
+            default:
+        }
     }
 
     return (
@@ -96,7 +107,7 @@ export default function TimerContainer() {
 
 function TimeDisplay({ timeLeft }: { timeLeft: number }) {
     const formatTime = (ms: number) => {
-        const minutes = `${Math.floor(ms % (1000*60*60)/ 60000)}`.padStart(2, '0');
+        const minutes = `${Math.floor(ms % (1000 * 60 * 60) / 60000)}`.padStart(2, '0');
         const seconds = `${Math.floor((ms % (1000 * 60)) / 1000)}`.padStart(2, '0');;
         return `${minutes} :${seconds}`
     }
