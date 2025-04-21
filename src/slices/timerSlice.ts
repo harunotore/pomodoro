@@ -1,36 +1,47 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { convertMinutesToMilliSeconds } from '../utils/utils'
 // import type { PayloadAction } from '@reduxjs/toolkit'
 
+export enum modeTypes {
+  pomodoroMode = 'pomodoro',
+  shortBreakMode = 'short break',
+  longBreakMode = 'long break'
+}
+
 export interface TimerState {
-  timeInMinutes: number
   pomodoroTimeInMinutes: number
   shortBreakTimeInMinutes: number
   longBreakTimeInMinutes: number
-  mode: string
-
+  mode: modeTypes
+  autoStart: boolean
+  timeLeft: number
 }
 
+const pomodoroTimeInMinutes = .04 
+const initialPomodoro = pomodoroTimeInMinutes * 60 * 1000
+
 const initialState: TimerState = {
-  timeInMinutes: 25,
-  pomodoroTimeInMinutes: 25,
+  pomodoroTimeInMinutes: pomodoroTimeInMinutes,
   shortBreakTimeInMinutes: 5,
   longBreakTimeInMinutes: 10,
-  mode: 'pomodoro'
+  autoStart: false,
+  mode: modeTypes.pomodoroMode,
+  timeLeft: initialPomodoro,
 }
 
 export const timerSlice = createSlice({
   name: 'timer',
   initialState,
   reducers: {
-    update: (state, action) => {
-      state.timeInMinutes = action.payload
-    },
     updateMode: (state, action) => {
       state.mode = action.payload
-    }
+    },
+    updateTimeLeft: (state, action) => {
+      state.timeLeft = action.payload
+    },
   }
 })
 
 // export const { increment, decrement, incrementByAmount } = counterSlice.actions
-export const { update, updateMode } = timerSlice.actions
+export const { updateTimeLeft, updateMode } = timerSlice.actions
 export default timerSlice.reducer
