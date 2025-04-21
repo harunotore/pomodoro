@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../Button/Button";
 import { convertMinToMs } from "../../utils/utils";
 import useTimer from "../../hooks/useTimer";
@@ -16,7 +16,7 @@ export default function TimerContainer() {
     // const clickPath = useRef(`/sounds/clicks/mouse-click.mp3`)
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const tickSoundRef = useRef<HTMLAudioElement | null>(null);
-    const lastSecondRef = useRef<number | null>(null);
+    // const lastSecondRef = useRef<number | null>(null);
 
     useEffect(() => {
         tickSoundRef.current = new Audio("/sounds/clicks/mouse-click.mp3");
@@ -66,14 +66,13 @@ export default function TimerContainer() {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const playTickSound = (remainingTime: number) => {
-        const currentSecond = Math.floor(remainingTime / 1000);
-        if (lastSecondRef.current !== currentSecond && currentSecond >= 0) {
-            lastSecondRef.current = currentSecond;
-            tickSoundRef.current?.play();
-        }
-    }
+    // const _playTickSound = (remainingTime: number) => {
+    //     const currentSecond = Math.floor(remainingTime / 1000);
+    //     if (lastSecondRef.current !== currentSecond && currentSecond >= 0) {
+    //         lastSecondRef.current = currentSecond;
+    //         tickSoundRef.current?.play();
+    //     }
+    // }
 
     const handleStop = () => {
         setIsActive(false)
