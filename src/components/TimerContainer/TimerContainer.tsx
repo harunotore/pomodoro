@@ -116,23 +116,22 @@ export default function TimerContainer() {
     }
 
     return (
-        <div className="flex flex-col gap-8">
-            <div>
-                <Button onClick={() => handleChangeMode(modeTypes.pomodoroMode)}>Pomodoro</Button>
-                <Button onClick={() => handleChangeMode(modeTypes.shortBreakMode)}>Short Break</Button>
-                <Button onClick={() => handleChangeMode(modeTypes.longBreakMode)}>Long Break</Button>
-
-            </div>
-            <div>
-                {timer.mode}
-                <TimeDisplay timeLeft={timer.timeLeft} />
-                <div className="flex gap-10">
-                    <Button className='rounded-lg' onClick={() => handleStartStop()}>{isActive ? 'PAUSE' : 'START'}</Button>
-                    <Button onClick={() => handleReset()}>Reset</Button>
+        <div className='flex justify-center py-8'>
+            <div className="flex flex-col border items-center rounded-xl py-12 px-12">
+                <div className="flex gap-4">
+                    <button className={`${timer.mode === modeTypes.pomodoroMode && 'border'}`} onClick={() => handleChangeMode(modeTypes.pomodoroMode)}>Pomodoro</button>
+                    <button className={`${timer.mode === modeTypes.shortBreakMode && 'border'}`} onClick={() => handleChangeMode(modeTypes.shortBreakMode)}>Short Break</button>
+                    <button className={`${timer.mode === modeTypes.longBreakMode && 'border'}`} onClick={() => handleChangeMode(modeTypes.longBreakMode)}>Long Break</button>
                 </div>
-
+                <div className="flex flex-col w-full items-center gap-4">
+                    <div>{timer.mode}</div>
+                    <TimeDisplay timeLeft={timer.timeLeft} />
+                    <div className="">
+                        <Button className='pushable ' onClick={() => handleStartStop()}><span className={`front ${isActive && 'pushableactive'}`}>{isActive ? 'PAUSE' : 'START'}</span></Button>
+                    </div>
+                </div>
             </div>
-        </div >
+        </div>
     )
 }
 
@@ -140,10 +139,10 @@ function TimeDisplay({ timeLeft }: { timeLeft: number }) {
     const formatTime = (ms: number) => {
         const minutes = `${Math.floor(ms % (1000 * 60 * 60) / 60000)}`.padStart(2, '0');
         const seconds = `${Math.floor((ms % (1000 * 60)) / 1000)}`.padStart(2, '0');;
-        return `${minutes} :${seconds}`
+        return `${minutes}:${seconds}`
     }
 
     return (
-        <div className="text-8xl">{formatTime(timeLeft)}</div>
+        <div className="text-8xl w-full flex justify-center">{formatTime(timeLeft)}</div>
     )
 }
