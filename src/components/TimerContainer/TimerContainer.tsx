@@ -6,6 +6,7 @@ import { updateMode, updateTimeLeft } from "../../slices/timerSlice";
 import { useDispatch } from "react-redux";
 import { modeTypes } from "../../slices/timerSlice";
 
+//testing 
 export default function TimerContainer() {
     const timer = useTimer()
     const dispatch = useDispatch()
