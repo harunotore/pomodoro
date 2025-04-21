@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { convertMinutesToMilliSeconds } from '../utils/utils'
 // import type { PayloadAction } from '@reduxjs/toolkit'
 
 export enum modeTypes {
