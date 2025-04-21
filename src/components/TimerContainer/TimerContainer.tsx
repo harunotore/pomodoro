@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Button from "../Button/Button";
 import { convertMinToMs } from "../../utils/utils";
 import useTimer from "../../hooks/useTimer";
@@ -6,18 +6,37 @@ import { updateMode, updateTimeLeft } from "../../slices/timerSlice";
 import { useDispatch } from "react-redux";
 import { modeTypes } from "../../slices/timerSlice";
 
-//testing adlkfjaf
 export default function TimerContainer() {
     const timer = useTimer()
     const dispatch = useDispatch()
     const [isActive, setIsActive] = useState(false)
-
     // const [autoStart, setAutoStart] = useState(false)
     const intervalRef = useRef<number | undefined>(undefined)
     const endTimeRef = useRef<number | undefined>(undefined)
+    // const clickPath = useRef(`/sounds/clicks/mouse-click.mp3`)
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const tickSoundRef = useRef<HTMLAudioElement | null>(null);
+    const lastSecondRef = useRef<number | null>(null);
 
     useEffect(() => {
-        return () => clearInterval(intervalRef.current!);
+        tickSoundRef.current = new Audio("/sounds/clicks/mouse-click.mp3");
+        tickSoundRef.current.volume = 0.2;
+    }, []);
+
+
+    useEffect(() => {
+        audioRef.current = new Audio("/sounds/clicks/light-switch.mp3");
+        audioRef.current.volume = 0.1;
+    }, [])
+
+    const playSound = () => {
+        if (audioRef.current) {
+            audioRef.current.play();
+        }
+    }
+
+    useEffect(() => {
+        return () => clearInterval(intervalRef.current);
     }, []);
 
     const handleStart = () => {
@@ -27,8 +46,8 @@ export default function TimerContainer() {
             intervalRef.current = setInterval(() => {
                 if (endTimeRef.current != undefined) {
                     const remainingTime = endTimeRef.current - Date.now()
+                    // playTickSound(remainingTime)
                     if (remainingTime <= 0) {
-                        //checkmode and switch but also set time 
                         if (timer.mode === modeTypes.pomodoroMode) {
                             dispatch(updateMode(modeTypes.shortBreakMode))
                             dispatch(updateTimeLeft(convertMinToMs(timer.shortBreakTimeInMinutes)))
@@ -42,8 +61,17 @@ export default function TimerContainer() {
                         dispatch(updateTimeLeft(remainingTime))
                     }
                 }
-
             }, 100)
+
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const playTickSound = (remainingTime: number) => {
+        const currentSecond = Math.floor(remainingTime / 1000);
+        if (lastSecondRef.current !== currentSecond && currentSecond >= 0) {
+            lastSecondRef.current = currentSecond;
+            tickSoundRef.current?.play();
         }
     }
 
@@ -52,26 +80,13 @@ export default function TimerContainer() {
         clearInterval(intervalRef.current)
     }
 
-
     const handleReset = () => {
         setIsActive(false)
         clearInterval(intervalRef.current)
-        checkMode()
-        // setAutoStart(true)
+        checkMode(timer.mode)
     }
 
-    const checkMode = () => {
-        if (timer.mode === modeTypes.pomodoroMode) {
-            dispatch(updateTimeLeft(convertMinToMs(timer.pomodoroTimeInMinutes)))
-        } else if (timer.mode === modeTypes.shortBreakMode) {
-            dispatch(updateTimeLeft(convertMinToMs(timer.shortBreakTimeInMinutes)))
-        }
-    }
-
-    const handleChangeMode = (mode: string) => {
-        setIsActive(false)
-        dispatch(updateMode(mode))
-        clearInterval(intervalRef.current)
+    const checkMode = (mode: string) => {
         switch (mode) {
             case modeTypes.pomodoroMode:
                 dispatch(updateTimeLeft(convertMinToMs(timer.pomodoroTimeInMinutes)))
@@ -86,6 +101,21 @@ export default function TimerContainer() {
         }
     }
 
+    const handleChangeMode = (mode: string) => {
+        handleStop()
+        dispatch(updateMode(mode))
+        checkMode(mode)
+    }
+
+    const handleStartStop = () => {
+        playSound()
+        if (isActive) {
+            handleStop()
+        } else {
+            handleStart()
+        }
+    }
+
     return (
         <div className="flex flex-col gap-8">
             <div>
@@ -97,9 +127,11 @@ export default function TimerContainer() {
             <div>
                 {timer.mode}
                 <TimeDisplay timeLeft={timer.timeLeft} />
-                <Button onClick={() => handleStart()}>Start</Button>
-                <Button onClick={() => handleStop()}>Stop</Button>
-                <Button onClick={() => handleReset()}>Reset</Button>
+                <div className="flex gap-10">
+                    <Button className='rounded-lg' onClick={() => handleStartStop()}>{isActive ? 'PAUSE' : 'START'}</Button>
+                    <Button onClick={() => handleReset()}>Reset</Button>
+                </div>
+
             </div>
         </div >
     )
@@ -113,6 +145,6 @@ function TimeDisplay({ timeLeft }: { timeLeft: number }) {
     }
 
     return (
-        <div className="">{formatTime(timeLeft)}</div>
+        <div className="text-8xl">{formatTime(timeLeft)}</div>
     )
 }
