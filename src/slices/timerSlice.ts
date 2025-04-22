@@ -16,7 +16,7 @@ export interface TimerState {
   timeLeft: number
 }
 
-const pomodoroTimeInMinutes = .04 
+const pomodoroTimeInMinutes = 25
 const initialPomodoro = pomodoroTimeInMinutes * 60 * 1000
 
 const initialState: TimerState = {

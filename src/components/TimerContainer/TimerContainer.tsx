@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import Button from "../Button/Button";
 import { convertMinToMs } from "../../utils/utils";
 import useTimer from "../../hooks/useTimer";
 import { updateMode, updateTimeLeft } from "../../slices/timerSlice";
@@ -12,7 +11,6 @@ export default function TimerContainer() {
     const [isActive, setIsActive] = useState(false)
     // const [autoStart, setAutoStart] = useState(false)
     const intervalRef = useRef<number | undefined>(undefined)
-    const endTimeRef = useRef<number | undefined>(undefined)
     // const clickPath = useRef(`/sounds/clicks/mouse-click.mp3`)
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const tickSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -23,10 +21,9 @@ export default function TimerContainer() {
         tickSoundRef.current.volume = 0.2;
     }, []);
 
-
     useEffect(() => {
-        audioRef.current = new Audio("/sounds/clicks/light-switch.mp3");
-        audioRef.current.volume = 0.1;
+        audioRef.current = new Audio("/sounds/clicks/ui-game-click.mp3");
+        audioRef.current.volume = 0.5;
     }, [])
 
     const playSound = () => {
@@ -42,30 +39,29 @@ export default function TimerContainer() {
     const handleStart = () => {
         if (!isActive) {
             setIsActive(true)
-            endTimeRef.current = Date.now() + timer.timeLeft
-            intervalRef.current = setInterval(() => {
-                if (endTimeRef.current != undefined) {
-                    const remainingTime = endTimeRef.current - Date.now()
-                    // playTickSound(remainingTime)
-                    if (remainingTime <= 0) {
-                        if (timer.mode === modeTypes.pomodoroMode) {
-                            dispatch(updateMode(modeTypes.shortBreakMode))
-                            dispatch(updateTimeLeft(convertMinToMs(timer.shortBreakTimeInMinutes)))
-                        } else if (timer.mode === modeTypes.shortBreakMode) {
-                            dispatch(updateMode(modeTypes.pomodoroMode))
-                            dispatch(updateTimeLeft(convertMinToMs(timer.pomodoroTimeInMinutes)))
-                        }
-                        clearInterval(intervalRef.current)
-                        setIsActive(false)
-                    } else {
-                        dispatch(updateTimeLeft(remainingTime))
-                    }
-                }
-            }, 100)
-
+            const endTime = Date.now() + timer.timeLeft
+            intervalRef.current = setInterval(() => intervalCallBack(endTime), 100)
         }
     }
-
+    
+    const intervalCallBack = (endTime: number) => {
+        const distance = endTime - Date.now()
+        // playTickSound(remainingTime)
+        if (distance <= 0) {
+            if (timer.mode === modeTypes.pomodoroMode) {
+                dispatch(updateMode(modeTypes.shortBreakMode))
+                dispatch(updateTimeLeft(convertMinToMs(timer.shortBreakTimeInMinutes)))
+            } else if (timer.mode === modeTypes.shortBreakMode) {
+                dispatch(updateMode(modeTypes.pomodoroMode))
+                dispatch(updateTimeLeft(convertMinToMs(timer.pomodoroTimeInMinutes)))
+            }
+            clearInterval(intervalRef.current)
+            setIsActive(false)
+        } else {
+            dispatch(updateTimeLeft(distance))
+        }
+    }
+    
     // const _playTickSound = (remainingTime: number) => {
     //     const currentSecond = Math.floor(remainingTime / 1000);
     //     if (lastSecondRef.current !== currentSecond && currentSecond >= 0) {
@@ -77,12 +73,6 @@ export default function TimerContainer() {
     const handleStop = () => {
         setIsActive(false)
         clearInterval(intervalRef.current)
-    }
-
-    const handleReset = () => {
-        setIsActive(false)
-        clearInterval(intervalRef.current)
-        checkMode(timer.mode)
     }
 
     const checkMode = (mode: string) => {
@@ -127,7 +117,7 @@ export default function TimerContainer() {
                     <div>{timer.mode}</div>
                     <TimeDisplay timeLeft={timer.timeLeft} />
                     <div className="">
-                        <Button className='pushable ' onClick={() => handleStartStop()}><span className={`front ${isActive && 'pushableactive'}`}>{isActive ? 'PAUSE' : 'START'}</span></Button>
+                        <button className={`${isActive ? 'button-active' : 'button'}`} onClick={() => handleStartStop()}>{isActive ? 'PAUSE' : 'START'}</button>
                     </div>
                 </div>
             </div>
