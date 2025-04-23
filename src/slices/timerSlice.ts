@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 // import type { PayloadAction } from '@reduxjs/toolkit'
 
 export enum modeTypes {
@@ -14,6 +14,7 @@ export interface TimerState {
   mode: modeTypes
   autoStart: boolean
   timeLeft: number
+  isActive: boolean
 }
 
 const pomodoroTimeInMinutes = 25
@@ -26,6 +27,7 @@ const initialState: TimerState = {
   autoStart: false,
   mode: modeTypes.pomodoroMode,
   timeLeft: initialPomodoro,
+  isActive: false,
 }
 
 export const timerSlice = createSlice({
@@ -38,9 +40,18 @@ export const timerSlice = createSlice({
     updateTimeLeft: (state, action) => {
       state.timeLeft = action.payload
     },
+    updatePomodoroTime: (state, action: PayloadAction<number>) => {
+      state.pomodoroTimeInMinutes = action.payload
+    },
+    updateShortBreakTime: (state, action: PayloadAction<number>) => {
+      state.shortBreakTimeInMinutes = action.payload
+    },
+    updateLongBreakTime: (state, action: PayloadAction<number>) => {
+      state.longBreakTimeInMinutes = action.payload
+    },
   }
 })
 
 // export const { increment, decrement, incrementByAmount } = counterSlice.actions
-export const { updateTimeLeft, updateMode } = timerSlice.actions
+export const { updateTimeLeft, updateMode, updatePomodoroTime, updateShortBreakTime, updateLongBreakTime } = timerSlice.actions
 export default timerSlice.reducer

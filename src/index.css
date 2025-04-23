@@ -1,5 +1,8 @@
 @import "tailwindcss";
-
+@import "@radix-ui/colors/gray.css";
+@import "@radix-ui/colors/black-alpha.css";
+@import "@radix-ui/colors/violet.css";
+@import "@radix-ui/colors/green.css";
 
 @font-face {
     font-family: ArialRounded;
